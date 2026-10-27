@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kinar's ChemCalc</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">⚗</span><b>ChemCalc</b></div>
+  <div class="search">
+    <input id="q" type="search" autocomplete="off" spellcheck="false"
+           placeholder="Поиск ( / )">
+  </div>
+  <div class="seg" id="mode" title="Как искать">
+    <button data-mode="name">По названию</button>
+    <button data-mode="ingr" title="Через запятую: водка, лёд">По ингредиенту</button>
+  </div>
+  <button class="icon-btn" id="theme" title="Сменить тему">◐</button>
+</header>
+
+<main>
+  <aside class="side">
+    <nav class="tabs" id="tabs"></nav>
+    <div class="chips" id="subs"></div>
+    <label class="opt"><input type="checkbox" id="showBase"> показать базовые</label>
+    <ul class="list" id="list"></ul>
+    <div class="foot" id="foot"></div>
+  </aside>
+  <section class="detail" id="detail"></section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  var REMOTE = "https://kinar7.github.io/ChemCalc/data.js";
+  var local = window.CHEM_DATA;
+  var started = false;
+
+  function start() {
+    if (started) return;
+    started = true;
+    var d = window.CHEM_DATA;
+    if (local && (!d || !d.generated || d.generated < local.generated)) window.CHEM_DATA = local;
+    var s = document.createElement("script");
+    s.src = "app.js";
+    document.body.appendChild(s);
+  }
+
+  if (location.protocol !== "file:") return start();
+  var r = document.createElement("script");
+  r.src = REMOTE + "?t=" + Date.now();
+  r.onload = r.onerror = start;
+  setTimeout(start, 3000);
+  document.head.appendChild(r);
+})();
+</script>
+</body>
+</html>
