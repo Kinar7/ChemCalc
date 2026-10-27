@@ -428,7 +428,19 @@ data = {
     "mixers": mixers,
 }
 
+def body(d):
+    return {k: v for k, v in d.items() if k not in ("generated", "repo")}
+
+
 out = HERE / "data.js"
-out.write_text("window.CHEM_DATA = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
-               encoding="utf-8")
-print(f"ok: {len(reagents)} reagents, {len(reactions)} reactions, {time.time() - t0:.1f}s")
+try:
+    old = json.loads(out.read_text(encoding="utf-8").split("=", 1)[1].strip().rstrip(";"))
+except (OSError, ValueError, IndexError):
+    old = None
+
+if old and body(old) == body(data):
+    print("no changes")
+else:
+    out.write_text("window.CHEM_DATA = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
+                   encoding="utf-8")
+    print(f"ok: {len(reagents)} reagents, {len(reactions)} reactions, {time.time() - t0:.1f}s")
